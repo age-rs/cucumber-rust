@@ -94,6 +94,7 @@
     clippy::read_zero_byte_vec,
     clippy::redundant_clone,
     clippy::redundant_type_annotations,
+    clippy::renamed_function_params,
     clippy::ref_patterns,
     clippy::rest_pat_in_fully_bound_structs,
     clippy::same_name_method,
@@ -131,6 +132,7 @@
     clippy::use_self,
     clippy::useless_let_if_seq,
     clippy::verbose_file_reads,
+    clippy::while_float,
     clippy::wildcard_enum_match_arm,
     explicit_outlives_requirements,
     future_incompatible,
@@ -223,11 +225,10 @@ pub use self::{
 /// across [scenarios][0], because we want some friction there to avoid tests
 /// being dependent on each other. If your workflow needs a way to share state
 /// between [scenarios][0] (ex. database connection pool), we recommend using
-/// [`once_cell`][1] crate or organize it other way via [shared state][2].
+/// a [`std::sync::LazyLock`] or organize it other way via [shared state][1].
 ///
 /// [0]: https://cucumber.io/docs/gherkin/reference#descriptions
-/// [1]: https://docs.rs/once_cell
-/// [2]: https://doc.rust-lang.org/book/ch16-03-shared-state.html
+/// [1]: https://doc.rust-lang.org/book/ch16-03-shared-state.html
 /// [Cucumber]: https://cucumber.io
 pub trait World: Sized + 'static {
     /// Error of creating a new [`World`] instance.

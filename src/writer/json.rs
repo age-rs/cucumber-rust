@@ -15,6 +15,7 @@
 use std::{
     fmt::{self, Debug},
     io, mem,
+    sync::LazyLock,
     time::SystemTime,
 };
 
@@ -22,7 +23,6 @@ use base64::Engine as _;
 use derive_more::Display;
 use inflector::Inflector as _;
 use mime::Mime;
-use once_cell::sync::Lazy;
 use serde::{Serialize, Serializer};
 
 use crate::{
@@ -448,7 +448,7 @@ impl Embedding {
     /// Creates [`Embedding`] from the provided [`event::Scenario::Log`].
     fn from_log(msg: impl AsRef<str>) -> Self {
         /// [`Mime`] of the [`event::Scenario::Log`] [`Embedding`].
-        static LOG_MIME: Lazy<Mime> = Lazy::new(|| {
+        static LOG_MIME: LazyLock<Mime> = LazyLock::new(|| {
             "text/x.cucumber.log+plain"
                 .parse()
                 .unwrap_or_else(|_| unreachable!("valid MIME"))
@@ -799,18 +799,18 @@ impl Feature {
 }
 
 impl PartialEq<gherkin::Feature> for Feature {
-    fn eq(&self, feature: &gherkin::Feature) -> bool {
+    fn eq(&self, other: &gherkin::Feature) -> bool {
         self.uri
             .as_ref()
             .and_then(|uri| {
-                feature
+                other
                     .path
                     .as_ref()
                     .and_then(|p| p.to_str().map(trim_path))
                     .map(|path| uri == path)
             })
             .unwrap_or_default()
-            && self.name == feature.name
+            && self.name == other.name
     }
 }
 
