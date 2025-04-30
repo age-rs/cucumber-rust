@@ -24,17 +24,18 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -44,8 +45,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -59,7 +60,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -72,8 +74,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -109,6 +111,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -156,7 +159,7 @@
 <p><a href="https://cucumber.io/docs/cucumber/api#scenario-hooks">Scenario hooks</a> represent a code running for each <a href="https://cucumber.io/docs/gherkin/reference#example">scenario</a> and not visible in <code>.feature</code> files.</p>
 <h2 id="before-hook"><a class="header" href="#before-hook"><code>Before</code> hook</a></h2>
 <p><a href="https://cucumber.io/docs/cucumber/api#before"><code>Before</code> hook</a> runs before the first step of each scenario, even before <a href="background.html"><code>Background</code></a> ones.</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">extern crate cucumber;
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">extern crate cucumber;
 </span><span class="boring">extern crate futures;
 </span><span class="boring">extern crate tokio;
 </span><span class="boring">
@@ -185,7 +188,7 @@ Whatever happens in a <a href="https://cucumber.io/docs/cucumber/api#before"><co
 </blockquote>
 <h2 id="after-hook"><a class="header" href="#after-hook"><code>After</code> hook</a></h2>
 <p><a href="https://cucumber.io/docs/cucumber/api#after"><code>After</code> hook</a> runs after the last <a href="https://cucumber.io/docs/gherkin/reference#steps">step</a> of each <a href="https://cucumber.io/docs/gherkin/reference#example">scenario</a>, even when that <a href="https://cucumber.io/docs/gherkin/reference#steps">step</a> fails or is skipped.</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">extern crate cucumber;
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">extern crate cucumber;
 </span><span class="boring">extern crate futures;
 </span><span class="boring">extern crate tokio;
 </span><span class="boring">

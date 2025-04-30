@@ -24,17 +24,18 @@
         <link rel="stylesheet" href="fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc.js"></script>
@@ -44,8 +45,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -59,7 +60,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -72,8 +74,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -109,6 +111,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -174,7 +177,7 @@ Options:
           Note: Tags from Feature, Rule and Scenario are merged together on filtering, so be careful about conflicting tags on different levels.
 
   -i, --input &lt;glob&gt;
-          Glob pattern to look for feature files with. By default, looks for `*.feature`s in the path configured tests runner
+          Glob pattern to look for feature files with. If not specified, looks for `*.feature` files in the path configured in the test runner
 
   -c, --concurrency &lt;int&gt;
           Number of scenarios to run concurrently. If not specified, uses the value configured in tests runner, or 64 by default
@@ -221,7 +224,7 @@ Options:
 <h2 id="customizing"><a class="header" href="#customizing">Customizing</a></h2>
 <p>By default, the whole CLI is composed of <a href="https://docs.rs/cucumber/*/cucumber/trait.Parser.html#associatedtype.Cli"><code>Parser::Cli</code></a>, <a href="https://docs.rs/cucumber/*/cucumber/trait.Runner.html#associatedtype.Cli"><code>Runner::Cli</code></a> and <a href="https://docs.rs/cucumber/*/cucumber/trait.Writer.html#associatedtype.Cli"><code>Writer::Cli</code></a>, provided by the used components. Once a custom <a href="architecture/parser.html"><code>Parser</code></a>, <a href="architecture/runner.html"><code>Runner</code></a> or <a href="architecture/writer.html"><code>Writer</code></a> is used, its CLI is automatically emerged into the final CLI.</p>
 <p>CLI may be extended even more with arbitrary options, if required. In such case we should combine the final CLI by ourselves and apply it via <a href="https://docs.rs/cucumber/*/cucumber/struct.Cucumber.html#method.with_cli"><code>Cucumber::with_cli()</code></a> method.</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">extern crate clap;
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">extern crate clap;
 </span><span class="boring">extern crate cucumber;
 </span><span class="boring">extern crate futures;
 </span><span class="boring">extern crate humantime;
@@ -229,7 +232,7 @@ Options:
 </span><span class="boring">
 </span><span class="boring">use std::time::Duration;
 </span><span class="boring">
-</span><span class="boring">use cucumber::{cli, given, then, when, World};
+</span><span class="boring">use cucumber::{World, cli, given, then, when};
 </span><span class="boring">use futures::FutureExt as _;
 </span><span class="boring">use tokio::time::sleep;
 </span><span class="boring">
@@ -298,7 +301,7 @@ async fn main() {
 </blockquote>
 <h2 id="aliasing"><a class="header" href="#aliasing">Aliasing</a></h2>
 <p><a href="https://doc.rust-lang.org/cargo/reference/config.html#alias">Cargo alias</a> is a neat way to define shortcuts for regularly used customized tests running commands.</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">extern crate clap;
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">extern crate clap;
 </span><span class="boring">extern crate cucumber;
 </span><span class="boring">extern crate futures;
 </span><span class="boring">extern crate humantime;
@@ -306,7 +309,7 @@ async fn main() {
 </span><span class="boring">
 </span><span class="boring">use std::time::Duration;
 </span><span class="boring">
-</span><span class="boring">use cucumber::{cli, given, then, when, World};
+</span><span class="boring">use cucumber::{World, cli, given, then, when};
 </span><span class="boring">use futures::FutureExt as _;
 </span><span class="boring">use tokio::time::sleep;
 </span><span class="boring">

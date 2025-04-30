@@ -24,17 +24,18 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -44,8 +45,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -59,7 +60,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -72,8 +74,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -109,6 +111,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -155,7 +158,7 @@
                         <h1 id="custom-writer"><a class="header" href="#custom-writer">Custom <code>Writer</code></a></h1>
 <p>Finally, let's implement a custom <a href="https://docs.rs/cucumber/*/cucumber/writer/index.html"><code>Writer</code></a> which simply outputs <a href="https://docs.rs/cucumber/*/cucumber/event/enum.Cucumber.html">cucumber events</a> to <a href="https://en.wikipedia.org/wiki/Standard_streams#Standard_output_(stdout)">STDOUT</a> in the order of receiving.</p>
 <p><a href="https://docs.rs/cucumber/*/cucumber/writer/index.html"><code>Writer</code></a> represents anything that consumes a <a href="https://docs.rs/futures/*/futures/stream/trait.Stream.html"><code>Stream</code></a> of <a href="https://docs.rs/cucumber/*/cucumber/event/enum.Cucumber.html">cucumber events</a>.</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">extern crate cucumber;
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">extern crate cucumber;
 </span><span class="boring">extern crate futures;
 </span><span class="boring">extern crate tokio;
 </span><span class="boring">
@@ -167,8 +170,8 @@
 </span><span class="boring">};
 </span><span class="boring">
 </span><span class="boring">use cucumber::{
-</span><span class="boring">    cli, event, gherkin, given, parser, step, then, when, Event, World,
-</span><span class="boring">    WriterExt as _,
+</span><span class="boring">    Event, World, WriterExt as _, cli, event, gherkin, given, parser, step, 
+</span><span class="boring">    then, when,
 </span><span class="boring">};
 </span><span class="boring">use futures::{
 </span><span class="boring">    future::{self, FutureExt as _},
@@ -441,15 +444,15 @@ async fn main() {
 <blockquote>
 <p><strong>TIP</strong>: <code>CustomWriter</code> will print trash if we feed unordered <a href="https://docs.rs/cucumber/*/cucumber/event/enum.Cucumber.html"><code>event::Cucumber</code></a>s into it. Though, we shouldn't care about order normalization in our implementations. Instead, we may just wrap <code>CustomWriter</code> into <a href="https://docs.rs/cucumber/*/cucumber/writer/struct.Normalize.html"><code>writer::Normalize</code></a>, which will do that for us.</p>
 </blockquote>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">extern crate cucumber;
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">extern crate cucumber;
 </span><span class="boring">extern crate futures;
 </span><span class="boring">extern crate tokio;
 </span><span class="boring">
 </span><span class="boring">use std::{path::PathBuf, time::Duration};
 </span><span class="boring">
 </span><span class="boring">use cucumber::{
-</span><span class="boring">    cli, event, gherkin, given, parser, then, when, Event, World, 
-</span><span class="boring">    WriterExt as _,
+</span><span class="boring">    Event, World, WriterExt as _, cli, event, gherkin, given, parser, 
+</span><span class="boring">    then, when,
 </span><span class="boring">};
 </span><span class="boring">use futures::{future, stream};
 </span><span class="boring">use tokio::time::sleep;
